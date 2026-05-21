@@ -96,9 +96,10 @@
         .prefix { left: 12px; }
         .suffix { right: 12px; }
 
+        /* 修复了这里的 padding-left，从 28px 增加到 42px 以容纳 RM */
         input { 
             width: 100%; 
-            padding: 12px 12px 12px 28px; 
+            padding: 12px 12px 12px 42px; 
             font-size: 1rem;
             border: 1px solid var(--border); 
             border-radius: 8px; 
@@ -107,7 +108,10 @@
             transition: all 0.2s ease;
         }
 
+        /* 针对百分比输入框的特殊处理，因为符号在右侧 */
         .input-wrapper.percent input { padding: 12px 28px 12px 12px; }
+        /* 针对没有前后缀的普通输入框 */
+        input.no-prefix { padding: 12px; }
         
         input:focus {
             outline: none;
@@ -185,7 +189,6 @@
     </div>
 
     <div class="grid">
-        <!-- 模块 1: 现金需求 -->
         <div class="card">
             <div class="card-header">
                 <h2>1. 紧急现金需求</h2>
@@ -193,20 +196,19 @@
             <div class="form-group">
                 <label>善后 / 最后医疗费用</label>
                 <div class="input-wrapper">
-                    <span class="prefix">RM </span>
+                    <span class="prefix">RM</span>
                     <input type="number" id="finalExpenses" value="15000">
                 </div>
             </div>
             <div class="form-group">
                 <label>总负债与房屋按揭</label>
                 <div class="input-wrapper">
-                    <span class="prefix">RM </span>
+                    <span class="prefix">RM</span>
                     <input type="number" id="totalDebt" value="250000">
                 </div>
             </div>
         </div>
 
-        <!-- 模块 2: 收入需求 -->
         <div class="card">
             <div class="card-header">
                 <h2>2. 持续收入需求</h2>
@@ -214,13 +216,13 @@
             <div class="form-group">
                 <label>每年所需生活费 (年收入)</label>
                 <div class="input-wrapper">
-                    <span class="prefix">RM </span>
+                    <span class="prefix">RM</span>
                     <input type="number" id="annualIncome" value="60000">
                 </div>
             </div>
             <div class="form-group">
                 <label>需要收入的年数</label>
-                <input type="number" id="years" value="20" style="padding-left:12px;">
+                <input type="number" id="years" class="no-prefix" value="20">
             </div>
             <div style="display:flex; gap:16px;">
                 <div class="form-group" style="flex:1;">
@@ -240,7 +242,6 @@
             </div>
         </div>
 
-        <!-- 模块 3: 现有资源 -->
         <div class="card">
             <div class="card-header">
                 <h2>3. 现有资源</h2>
@@ -248,14 +249,14 @@
             <div class="form-group">
                 <label>当前储蓄与流动投资</label>
                 <div class="input-wrapper">
-                    <span class="prefix">RM </span>
+                    <span class="prefix">RM</span>
                     <input type="number" id="savings" value="50000">
                 </div>
             </div>
             <div class="form-group">
                 <label>现有寿险保额</label>
                 <div class="input-wrapper">
-                    <span class="prefix">RM </span>
+                    <span class="prefix">RM</span>
                     <input type="number" id="existingInsurance" value="100000">
                 </div>
             </div>
@@ -264,7 +265,6 @@
 
     <button class="btn" onclick="calculateNeeds()">计算保障缺口</button>
 
-    <!-- 结果显示区域 -->
     <div id="resultContainer" class="result-container">
         <div class="result-title" id="resultTitle">保障缺口</div>
         <div class="result-value" id="resultValue">RM 0</div>
@@ -281,7 +281,7 @@
             </div>
             <div class="breakdown-item">
                 <div class="breakdown-label">总资源</div>
-                <div class="breakdown-val" id="breakResources">-RM 0</div>
+                <div class="breakdown-val" id="breakResources">- RM 0</div>
             </div>
         </div>
     </div>
@@ -319,9 +319,9 @@
         let totalNeeds = totalCashNeeds + pvIncomeNeeds;
         let protectionGap = totalNeeds - totalResources;
 
-        // 货币格式化
+        // 货币格式化 (修改为 RM 格式)
         const formatMoney = (amount) => {
-            return 'RM ' + amount.toLocaleString('zh-CN', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+            return 'RM ' + amount.toLocaleString('en-MY', {minimumFractionDigits: 0, maximumFractionDigits: 0});
         };
 
         // 获取DOM元素
@@ -333,7 +333,7 @@
         // 填充明细数据
         document.getElementById('breakCash').innerText = formatMoney(totalCashNeeds);
         document.getElementById('breakIncome').innerText = formatMoney(pvIncomeNeeds);
-        document.getElementById('breakResources').innerText = '-' + formatMoney(totalResources);
+        document.getElementById('breakResources').innerText = '- ' + formatMoney(totalResources);
 
         // 根据缺口或盈余更新样式和文本
         container.classList.add('show');
